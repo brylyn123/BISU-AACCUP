@@ -1,0 +1,26 @@
+# --- Frontend (React/Node) ---
+node_modules/
+dist/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Backend (PHP/XAMPP) ---
+# Ignore user-uploaded content (keep the folders, ignore the files)
+uploads/*
+avatars/*
+!uploads/.gitkeep
+!avatars/.gitkeep
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore database configuration if it contains passwords
+# config.php
