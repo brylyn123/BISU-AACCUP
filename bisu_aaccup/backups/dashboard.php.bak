@@ -1,0 +1,82 @@
+<?php
+session_start();
+
+// If user is not logged in, redirect to login
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+
+require_once 'config/db.php';
+include 'nav.php';
+?>
+
+    <div class="dashboard-wrapper" style="padding:28px 20px; max-width:1200px; margin:0 auto;">
+        <header style="margin-bottom:18px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h1 style="margin:0 0 6px 0; font-size:1.6rem">Welcome, <?php echo htmlspecialchars($_SESSION['full_name'] ?? 'User'); ?></h1>
+                <div style="color:#666; font-size:0.95rem">Role: <?php echo htmlspecialchars($_SESSION['role'] ?? 'N/A'); ?></div>
+            </div>
+        </header>
+
+        <style>
+            .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+            .dash-card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(46,52,80,0.06);border:1px solid rgba(15,15,15,0.03);transition:transform .15s ease,box-shadow .15s ease}
+            .dash-card:hover{transform:translateY(-6px);box-shadow:0 18px 36px rgba(46,52,80,0.08)}
+            .dash-card h3{margin:0 0 8px 0;font-size:1.05rem}
+            .dash-card p{margin:0;color:#666;font-size:0.95rem}
+            .dash-card .card-actions{margin-top:12px}
+            .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:#6c63ff;color:#fff;text-decoration:none}
+        </style>
+
+        <main class="dashboard-grid">
+            <?php $role = $_SESSION['role'] ?? ''; ?>
+
+            <?php if ($role === 'Admin'): ?>
+                <section class="dash-card">
+                    <h3>User Management</h3>
+                    <p>View, create, and manage user accounts and roles.</p>
+                    <div class="card-actions"><a class="btn" href="users.php">Manage Users</a></div>
+                </section>
+
+                <section class="dash-card">
+                    <h3>Program Settings</h3>
+                    <p>Configure programs, codes, and program-related settings.</p>
+                    <div class="card-actions"><a class="btn" href="programs.php">Programs</a></div>
+                </section>
+
+                <section class="dash-card">
+                    <h3>Admin Dashboard</h3>
+                    <p>Open the full administrative dashboard for document repository management.</p>
+                    <div class="card-actions"><a class="btn" href="admin_dashboard.php">Open Admin Dashboard</a></div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($role === 'Focal Person'): ?>
+                <section class="dash-card">
+                    <h3>My Area Uploads</h3>
+                    <p>Upload and manage documents specific to your assigned area.</p>
+                    <div class="card-actions"><a class="btn" href="uploads.php">My Uploads</a></div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($role === 'Dean'): ?>
+                <section class="dash-card">
+                    <h3>Department Compliance Report</h3>
+                    <p>View compliance status and generate department reports.</p>
+                    <div class="card-actions"><a class="btn" href="reports.php">View Reports</a></div>
+                </section>
+            <?php endif; ?>
+
+            <?php if (!in_array($role, ['Admin','Focal Person','Dean'])): ?>
+                <section class="dash-card">
+                    <h3>Overview</h3>
+                    <p>Quick links and recent activity tailored to your account.</p>
+                    <div class="card-actions"><a class="btn" href="index.php">Go Home</a></div>
+                </section>
+            <?php endif; ?>
+
+        </main>
+    </div>
+
+<?php include 'footer.php'; ?>
