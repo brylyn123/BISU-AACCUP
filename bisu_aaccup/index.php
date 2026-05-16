@@ -15,10 +15,10 @@ include 'nav.php';
             <div class="hero-content">
                 <div class="hero-badge">
                     <i class="fas fa-graduation-cap"></i>
-                    <span>BISU Candijay Accreditation System</span>
+                    <span>BISU Candijay Repository Workflow</span>
                 </div>
-                <h1 class="hero-title">Streamline Your Accreditation Journey</h1>
-                <p class="hero-subtitle">A centralized, secure, and efficient repository for managing all accreditation documents at BISU Candijay Campus.</p>
+                <h1 class="hero-title">Build And Review Accreditation Repositories In One Place</h1>
+                <p class="hero-subtitle">Create repository workspaces, assign focal persons and accreditors, organize folders, and review accreditation files in a secure shared workflow.</p>
                 
                 <div class="hero-buttons">
                     <a href="login.php" class="btn btn-primary">
@@ -58,23 +58,23 @@ include 'nav.php';
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <h3>Centralized Repository</h3>
-                    <p>Upload, organize, and access all accreditation documents in one secure location.</p>
+                    <h3>Repository Workspaces</h3>
+                    <p>Create flexible repositories with folders, areas, and organized document sections for each accreditation effort.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-search"></i></div>
                     <h3>Easy Retrieval</h3>
-                    <p>Quickly find documents by area, program, or year with powerful search tools.</p>
+                    <p>Open assigned repositories quickly and navigate files the same way teams work inside shared drives.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-comments"></i></div>
-                    <h3>Instant Feedback</h3>
-                    <p>Receive and respond to accreditor comments and suggestions in real-time.</p>
+                    <h3>Review Comments</h3>
+                    <p>Let admins and accreditors leave comments on uploaded files so focal persons can complete missing requirements.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
-                    <h3>Progress Tracking</h3>
-                    <p>Monitor compliance status across different areas and programs visually.</p>
+                    <h3>Access Control</h3>
+                    <p>Grant and remove accreditor access per repository to keep each accreditation workspace organized and secure.</p>
                 </div>
             </div>
         </div>

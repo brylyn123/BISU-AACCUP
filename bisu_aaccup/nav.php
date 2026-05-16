@@ -14,7 +14,7 @@
             <div class="nav-wrapper">
                 <a href="index.php" class="nav-logo">
                     <i class="fas fa-book-open"></i>
-                    <span>BISU Candijay AACCUP System</span>
+                    <span>BISU Candijay AACCUP Repository</span>
                 </a>
                 <button class="nav-toggle" id="navToggle">
                     <span></span>

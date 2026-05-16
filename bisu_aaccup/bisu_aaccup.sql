@@ -545,6 +545,99 @@ ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`),
   ADD CONSTRAINT `users_ibfk_2` FOREIGN KEY (`program_id`) REFERENCES `programs` (`program_id`),
   ADD CONSTRAINT `users_ibfk_3` FOREIGN KEY (`college_id`) REFERENCES `colleges` (`college_id`);
+
+-- --------------------------------------------------------
+
+--
+-- Repository workflow tables
+-- Active accreditation workflow uses repository-based collaboration.
+--
+
+CREATE TABLE IF NOT EXISTS `repositories` (
+  `repository_id` int(11) NOT NULL AUTO_INCREMENT,
+  `repository_name` varchar(255) NOT NULL,
+  `school_year` varchar(20) NOT NULL,
+  `accreditation_year` year(4) NOT NULL,
+  `program_id` int(11) DEFAULT NULL,
+  `course_type` varchar(150) DEFAULT NULL,
+  `repository_status` enum('draft','in_review','approved','archived') NOT NULL DEFAULT 'draft',
+  `created_by` int(11) NOT NULL,
+  `approved_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`repository_id`),
+  KEY `idx_repositories_program` (`program_id`),
+  KEY `idx_repositories_status` (`repository_status`),
+  KEY `idx_repositories_created_by` (`created_by`),
+  CONSTRAINT `fk_repositories_program` FOREIGN KEY (`program_id`) REFERENCES `programs` (`program_id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_repositories_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `repository_members` (
+  `repository_member_id` int(11) NOT NULL AUTO_INCREMENT,
+  `repository_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `member_role` enum('focal','accreditor') NOT NULL,
+  `can_upload` tinyint(1) NOT NULL DEFAULT 0,
+  `can_review` tinyint(1) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `assigned_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `revoked_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`repository_member_id`),
+  UNIQUE KEY `uniq_repository_member` (`repository_id`,`user_id`,`member_role`),
+  KEY `idx_repository_members_user` (`user_id`),
+  CONSTRAINT `fk_repository_members_repository` FOREIGN KEY (`repository_id`) REFERENCES `repositories` (`repository_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_repository_members_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `repository_sections` (
+  `section_id` int(11) NOT NULL AUTO_INCREMENT,
+  `repository_id` int(11) NOT NULL,
+  `parent_section_id` int(11) DEFAULT NULL,
+  `section_name` varchar(255) NOT NULL,
+  `section_kind` enum('folder','area') NOT NULL DEFAULT 'folder',
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`section_id`),
+  KEY `idx_repository_sections_repository` (`repository_id`),
+  KEY `idx_repository_sections_parent` (`parent_section_id`),
+  CONSTRAINT `fk_repository_sections_repository` FOREIGN KEY (`repository_id`) REFERENCES `repositories` (`repository_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_repository_sections_parent` FOREIGN KEY (`parent_section_id`) REFERENCES `repository_sections` (`section_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `repository_documents` (
+  `repository_document_id` int(11) NOT NULL AUTO_INCREMENT,
+  `repository_id` int(11) NOT NULL,
+  `section_id` int(11) DEFAULT NULL,
+  `file_name` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `mime_type` varchar(120) DEFAULT NULL,
+  `uploaded_by` int(11) NOT NULL,
+  `document_status` enum('draft','for_review','finalized','approved') NOT NULL DEFAULT 'draft',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`repository_document_id`),
+  KEY `idx_repository_documents_repository` (`repository_id`),
+  KEY `idx_repository_documents_section` (`section_id`),
+  KEY `idx_repository_documents_uploaded_by` (`uploaded_by`),
+  CONSTRAINT `fk_repository_documents_repository` FOREIGN KEY (`repository_id`) REFERENCES `repositories` (`repository_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_repository_documents_section` FOREIGN KEY (`section_id`) REFERENCES `repository_sections` (`section_id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_repository_documents_uploaded_by` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `repository_comments` (
+  `repository_comment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `repository_document_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `comment_text` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`repository_comment_id`),
+  KEY `idx_repository_comments_document` (`repository_document_id`),
+  KEY `idx_repository_comments_user` (`user_id`),
+  CONSTRAINT `fk_repository_comments_document` FOREIGN KEY (`repository_document_id`) REFERENCES `repository_documents` (`repository_document_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_repository_comments_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
